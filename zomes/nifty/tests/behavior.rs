@@ -1,7 +1,7 @@
 use futures::future;
 use hdk::prelude::*;
-// use holochain::sweettest::SweetConductor;
 use holochain::sweettest::*;
+use holochain::test_utils::consistency_10s;
 
 use nifty::*;
 
@@ -10,7 +10,6 @@ const DNA_FILEPATH: &str = "../../workdir/dna/nifty.dna";
 #[tokio::test(flavor = "multi_thread")]
 pub async fn test_get_details_for_entry() {
     let (conductors, _agents, apps) = setup_conductors(2).await;
-    conductors.exchange_peer_info().await;
 
     let conductor_alice = &conductors[0];
     let conductor_bob = &conductors[1];
@@ -33,18 +32,58 @@ pub async fn test_get_details_for_entry() {
         .call(&cell_bob.zome("nifty"), "create", nifty_input.clone())
         .await;
 
-    // let details: EntryDetails = conductor_alice
-    //     .call(
-    //         &cell_alice.zome("nifty"),
-    //         "get_details_for_entry",
-    //         nifty_input.clone(),
-    //     )
-    //     .await;
+    consistency_10s(&[&cell_alice, &cell_bob]).await;
 
-    // println!("{:#?}", details.headers);
+    let _details: Details = conductor_alice
+        .call(
+            &cell_alice.zome("nifty"),
+            "get_details_for_entry",
+            nifty_input.clone(),
+        )
+        .await;
+
+    // println!("{:#?}", details);
 
     // println!("{}", details.headers[0].into_inner().1);
     // assert_eq!(details.entry, nifty);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+pub async fn test_transfer() {
+    let (conductors, _agents, apps) = setup_conductors(2).await;
+
+    let conductor_alice = &conductors[0];
+    let _conductor_bob = &conductors[1];
+
+    let cells = apps.cells_flattened();
+    let cell_alice = cells[0];
+    let cell_bob = cells[1];
+
+    let nifty_id = String::from("abc123");
+    let nifty_input = NiftyInput {
+        id: nifty_id.clone(),
+    };
+
+    let transfer_input = TransferInput {
+        nifty_id,
+        recipient: cell_bob.agent_pubkey().clone(),
+    };
+
+    let _: () = conductor_alice
+        .call(&cell_alice.zome("nifty"), "create", nifty_input.clone())
+        .await;
+
+    let _: () = conductor_alice
+        .call(&cell_alice.zome("nifty"), "transfer", transfer_input)
+        .await;
+
+    let current_owner: AgentPubKey = conductor_alice
+        .call(&cell_alice.zome("nifty"), "current_owner", nifty_input)
+        .await;
+
+    assert_eq!(current_owner, cell_bob.agent_pubkey().clone());
+
+    // consistency_10s(&[&cell_alice, &cell_bob]).await;
 }
 
 #[tokio::test(flavor = "multi_thread")]

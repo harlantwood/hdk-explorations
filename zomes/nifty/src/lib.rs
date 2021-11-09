@@ -20,6 +20,12 @@ pub struct Nifty {
     pub owner: AgentPubKey,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct TransferInput {
+    pub nifty_id: String,
+    pub recipient: AgentPubKey,
+}
+
 #[hdk_extern]
 pub fn create(nifty_input: NiftyInput) -> ExternResult<()> {
     create_entry(nifty_input.clone())?;
@@ -41,11 +47,18 @@ pub fn get_details_for_entry(nifty_input: NiftyInput) -> ExternResult<Details> {
     let entry_hash = hash_entry(nifty_input)?;
     let details = get_details(entry_hash.clone(), GetOptions::default())?
         .ok_or_else(|| WasmError::Guest(format!("No entry was found for hash {}", entry_hash)))?;
-    // match details {
-    //     EntryDetails => Ok(details),
-    //     _ => Err(WasmError::Guest("wat".into())),
-    // }
+    // debug!("{:#?}", details);
     Ok(details)
+}
+
+#[hdk_extern]
+pub fn transfer(_transfer_input: TransferInput) -> ExternResult<()> {
+    Ok(())
+}
+
+#[hdk_extern]
+pub fn current_owner(_nifty_input: NiftyInput) -> ExternResult<AgentPubKey> {
+    Ok(agent_info()?.agent_latest_pubkey)
 }
 
 #[hdk_extern]
@@ -57,7 +70,7 @@ pub fn debug(_: ()) -> ExternResult<()> {
     error!("error works");
     debug!(foo = "fields", bar = "work", "too");
 
-    trace!("tracing {}", "works!"); // what does this do?
+    trace!("tracing {}", "works!"); // this is a logging level
 
     Ok(())
 }
