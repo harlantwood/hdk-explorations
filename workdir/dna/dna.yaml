@@ -1,0 +1,8 @@
+---
+manifest_version: "1"
+name: nifty
+uuid: ~
+properties: ~
+zomes:
+  - name: nifty
+    bundled: ../../target/wasm32-unknown-unknown/release/nifty.wasm
