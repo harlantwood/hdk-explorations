@@ -1,5 +1,12 @@
 # HDK Explorations
 
+## Holochain in Action #24
+
+### Goals
+
+- Walking trees of entry updates by multiple parties
+- Filtering update tree branches to only valid ones
+
 ## Holochain in Action #23
 
 ### Goals

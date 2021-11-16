@@ -8,6 +8,7 @@ use nifty::*;
 const DNA_FILEPATH: &str = "../../workdir/dna/nifty.dna";
 
 #[tokio::test(flavor = "multi_thread")]
+#[ignore]
 pub async fn test_get_details_for_entry() {
     let (conductors, _agents, apps) = setup_conductors(2).await;
 
@@ -18,7 +19,7 @@ pub async fn test_get_details_for_entry() {
     let cell_alice = cells[0];
     let cell_bob = cells[1];
 
-    let nifty_input = NiftyInput {
+    let nifty_input = NiftyId {
         id: "abc123".into(),
     };
 
@@ -60,7 +61,7 @@ pub async fn test_transfer() {
     let cell_bob = cells[1];
 
     let nifty_id = String::from("abc123");
-    let nifty_input = NiftyInput {
+    let nifty_input = NiftyId {
         id: nifty_id.clone(),
     };
 
@@ -87,6 +88,7 @@ pub async fn test_transfer() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[ignore]
 pub async fn test_wasm_debugging() {
     let (conductors, _agents, apps) = setup_conductors(1).await;
 

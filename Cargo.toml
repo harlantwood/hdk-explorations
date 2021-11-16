@@ -2,6 +2,7 @@
 members = [
   "zomes/nifty",
 ]
+# resolver = "2"
 
 [profile.dev]
 opt-level = "z"
