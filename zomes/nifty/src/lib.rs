@@ -70,12 +70,15 @@ pub fn transfer(_transfer_input: TransferInput) -> ExternResult<()> {
 
 #[hdk_extern]
 pub fn current_owner(nifty_id: NiftyId) -> ExternResult<AgentPubKey> {
-    let updated_nifty = updated_nifty(nifty_id)?;
-    let owner = updated_nifty.owner;
+    let latest_nifty = latest_nifty(nifty_id)?;
+    let owner = latest_nifty.owner;
     Ok(owner)
 }
 
-fn updated_nifty(nifty_id: NiftyId) -> ExternResult<Nifty> {
+fn latest_nifty(nifty_id: NiftyId) -> ExternResult<Nifty> {
+    // TODO walk the chain to find the latest update
+    // We currently return the first entry!
+
     let nifty_id_hash = hash_entry(&nifty_id)?;
     let links = get_links(nifty_id_hash, None)?; // TODO pass in link tag
 
