@@ -50,6 +50,30 @@ pub async fn test_get_details_for_entry() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[ignore]
+pub async fn test_get_details_for_entry_with_multiple_updates() {
+    let (conductors, _agents, apps) = setup_conductors(2).await;
+
+    let conductor_alice = &conductors[0];
+
+    let cells = apps.cells_flattened();
+    let cell_alice = cells[0];
+
+    let nifty_input = NiftyId {
+        id: "abc123".into(),
+    };
+
+    let _: () = conductor_alice
+        .call(
+            &cell_alice.zome("nifty"),
+            "get_details_for_entry_with_multiple_updates",
+            nifty_input.clone(),
+        )
+        .await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+// #[ignore]
 pub async fn test_transfer() {
     let (conductors, _agents, apps) = setup_conductors(2).await;
 

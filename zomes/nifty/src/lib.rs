@@ -9,7 +9,11 @@ use hdk::prelude::HasHash;
 use hdk::prelude::*;
 use hdk::prelude::{entry_defs, hdk_extern, map_extern, ExternResult};
 
-entry_defs![Nifty::entry_def(), NiftyId::entry_def()];
+entry_defs![
+    Nifty::entry_def(),
+    NiftyId::entry_def(),
+    EzNifty::entry_def()
+];
 
 #[hdk_entry(id = "nifty_id", visibility = "public")]
 #[derive(Clone)]
@@ -22,6 +26,13 @@ pub struct NiftyId {
 pub struct Nifty {
     pub id: String,
     pub owner: AgentPubKey,
+}
+
+#[hdk_entry(id = "eznifty", visibility = "public")]
+#[derive(Clone)]
+pub struct EzNifty {
+    pub id: String,
+    pub owner: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -116,9 +127,11 @@ fn latest_nifty_element(nifty_id: NiftyId) -> ExternResult<Element> {
     // get_details(hash(element));
 
     let maybe_latest = match details {
-        Some(Details::Entry(EntryDetails { updates, .. })) => Some(updates[0].clone()),
+        Some(Details::Entry(EntryDetails { updates, .. })) => Some(updates.clone()),
         _ => None,
     };
+
+    debug!("maybe_latest: {:#?}", maybe_latest);
 
     // return pair
     // header hash
@@ -142,6 +155,59 @@ pub fn get_details_for_entry(nifty_id: NiftyId) -> ExternResult<Details> {
     // debug!("{:#?}", details);
     Ok(details)
 }
+
+#[hdk_extern]
+pub fn get_details_for_entry_with_multiple_updates(nifty_id: NiftyId) -> ExternResult<()> {
+    let nifty_amy = EzNifty {
+        id: nifty_id.id.clone(),
+        owner: "Amy".into(),
+    };
+    let create_header_hash = create_entry(nifty_amy.clone())?;
+
+    let nifty_beatrix = EzNifty {
+        id: nifty_id.id.clone(),
+        owner: "Beatrix".into(),
+    };
+    update_entry(create_header_hash.clone(), nifty_beatrix)?;
+
+    let nifty_camille = EzNifty {
+        id: nifty_id.id,
+        owner: "Camille".into(),
+    };
+    let update_header_hash = update_entry(create_header_hash.clone(), nifty_camille)?;
+
+    let details =
+        get_details(create_header_hash.clone(), GetOptions::default())?.ok_or_else(|| {
+            WasmError::Guest(format!(
+                "No entry was found for hash {}",
+                create_header_hash.clone()
+            ))
+        })?;
+
+    debug!("CREATE HEADER DETAILS: {:#?}", details);
+
+    let details =
+        get_details(update_header_hash.clone(), GetOptions::default())?.ok_or_else(|| {
+            WasmError::Guest(format!(
+                "No entry was found for hash {}",
+                update_header_hash.clone()
+            ))
+        })?;
+
+    debug!("LAST UPDATE HEADER DETAILS: {:#?}", details);
+
+    // unimplemented!()
+    Ok(())
+}
+
+// fn details(header_hash: HoloHash<Header>) -> ExternResult<()> {
+//     get_details(header_hash.clone(), GetOptions::default())?.ok_or_else(|| {
+//         WasmError::Guest(format!(
+//             "No entry was found for hash {}",
+//             header_hash.clone()
+//         ))
+//     });
+// }
 
 #[hdk_extern]
 pub fn debug(_: ()) -> ExternResult<()> {
