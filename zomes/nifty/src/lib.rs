@@ -1,3 +1,5 @@
+#![allow(warnings)]
+
 use std::convert::{TryFrom, TryInto};
 
 use hdk::entry::EntryDefRegistration;
