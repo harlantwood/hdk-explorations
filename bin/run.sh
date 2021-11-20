@@ -17,9 +17,6 @@ run_targets () {
 run () {
   func=$1
   if [[ $(type -t $func) == function ]]; then
-    # echo "----> ${func}"
-    # echo "      CARGO_TARGET_DIR: ${CARGO_TARGET_DIR}"
-    # echo "      RUSTFLAGS: ${RUSTFLAGS}"
     $func
   else
     echo "Unknown command: ${func}"
@@ -33,14 +30,14 @@ shell () {
   eval "$command"
 }
 
-in_test_env () {
-  # RUST_BACKTRACE=1
-  # RUSTFLAGS="-D warnings -A dead_code -A unused-imports"
-  # RUSTFLAGS="-D warnings -A unused-variables"
-  # CARGO_TARGET_DIR=target/test
-  shell "CARGO_TARGET_DIR=target"
-  run_targets $*
-}
+# in_test_env () {
+#   # RUST_BACKTRACE=1
+#   # RUSTFLAGS="-D warnings -A dead_code -A unused-imports"
+#   # RUSTFLAGS="-D warnings -A unused-variables"
+#   # CARGO_TARGET_DIR=target/test
+#   shell "CARGO_TARGET_DIR=target"
+#   run_targets $*
+# }
 
 # targets to be passed in as command line args:
 
@@ -49,17 +46,20 @@ checks () {
 }
 
 test () {
-  in_test_env build_dna test_metal
+  run_targets build_dna test_metal
 }
 
 test_watch () {
-  # ensure_cargo_watch_installed
   shell "cargo watch --clear -- bin/run.sh test"
 }
 
 test_metal () {
   # shell "cargo test"
   shell "cargo test -- --nocapture"
+}
+
+cargo_check () {
+  shell "cargo check"
 }
 
 build_happ () {
@@ -74,7 +74,7 @@ build_dna () {
 
 build_zome () {
   # CARGO_TARGET_DIR=target/zome
-  # cargo build --target wasm32-unknown-unknown
+  # shell "cargo build --target wasm32-unknown-unknown"
   shell "cargo build --release --target wasm32-unknown-unknown"
 }
 
