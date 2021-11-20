@@ -57,20 +57,13 @@ fn link_id_to_nifty(source: NiftyId, target: Nifty) -> ExternResult<()> {
 }
 
 #[hdk_extern]
-pub fn get_details_for_entry(nifty_id: NiftyId) -> ExternResult<Details> {
-    let entry_hash = hash_entry(nifty_id)?;
-    let details = get_details(entry_hash.clone(), GetOptions::default())?
-        .ok_or_else(|| WasmError::Guest(format!("No entry was found for hash {}", entry_hash)))?;
-    // debug!("{:#?}", details);
-    Ok(details)
-}
-
-#[hdk_extern]
 pub fn transfer(transfer_input: TransferInput) -> ExternResult<()> {
     let nifty_id = transfer_input.nifty_id.clone();
     let latest_nifty_element = latest_nifty_element(NiftyId {
         id: nifty_id.clone(),
     })?;
+
+    // TODO: validate I own this thing
 
     // update owner via entry update
     update_entry(
@@ -83,8 +76,6 @@ pub fn transfer(transfer_input: TransferInput) -> ExternResult<()> {
 
     Ok(())
 }
-
-// TODO: validate I own this thing
 
 #[hdk_extern]
 pub fn current_owner(nifty_id: NiftyId) -> ExternResult<AgentPubKey> {
@@ -118,22 +109,19 @@ fn latest_nifty_element(nifty_id: NiftyId) -> ExternResult<Element> {
 
     let link = links[0].clone();
 
-    // let details = get_details(link.target, GetOptions::default())?;
+    let details = get_details(link.target, GetOptions::default())?;
     debug!("{:#?}", details);
     // get_details(hash(element));
 
-    // let eh: EntryHash = input.into();
-    // let updates =
-    let maybe_latest = match get_details(link.target, GetOptions::default())? {
-        Some(Details::Entry(EntryDetails { updates, .. })) => Some(updates[0]),
+    let maybe_latest = match details {
+        Some(Details::Entry(EntryDetails { updates, .. })) => Some(updates[0].clone()),
         _ => None,
     };
 
-    // return pair 
+    // return pair
     // header hash
     // entry
 
-    // Ok(())
     unimplemented!();
 }
 
@@ -142,6 +130,15 @@ struct StringLinkTag(String);
 fn link_tag(tag: &str) -> ExternResult<LinkTag> {
     let serialized_bytes: SerializedBytes = StringLinkTag(tag.into()).try_into()?;
     Ok(LinkTag(serialized_bytes.bytes().clone()))
+}
+
+#[hdk_extern]
+pub fn get_details_for_entry(nifty_id: NiftyId) -> ExternResult<Details> {
+    let entry_hash = hash_entry(nifty_id)?;
+    let details = get_details(entry_hash.clone(), GetOptions::default())?
+        .ok_or_else(|| WasmError::Guest(format!("No entry was found for hash {}", entry_hash)))?;
+    // debug!("{:#?}", details);
+    Ok(details)
 }
 
 #[hdk_extern]
