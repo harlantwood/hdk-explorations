@@ -64,9 +64,25 @@ pub fn get_details_for_entry(nifty_id: NiftyId) -> ExternResult<Details> {
 }
 
 #[hdk_extern]
-pub fn transfer(_transfer_input: TransferInput) -> ExternResult<()> {
+pub fn transfer(transfer_input: TransferInput) -> ExternResult<()> {
+    let nifty_id = transfer_input.nifty_id.clone();
+    let latest_nifty_element = latest_nifty_element(NiftyId {
+        id: nifty_id.clone(),
+    })?;
+
+    // update owner via entry update
+    update_entry(
+        latest_nifty_element.header_address().clone(),
+        Nifty {
+            id: nifty_id,
+            owner: agent_info()?.agent_latest_pubkey,
+        },
+    )?;
+
     Ok(())
 }
+
+// TODO: validate I own this thing
 
 #[hdk_extern]
 pub fn current_owner(nifty_id: NiftyId) -> ExternResult<AgentPubKey> {
@@ -76,6 +92,17 @@ pub fn current_owner(nifty_id: NiftyId) -> ExternResult<AgentPubKey> {
 }
 
 fn latest_nifty(nifty_id: NiftyId) -> ExternResult<Nifty> {
+    let element = latest_nifty_element(nifty_id)?;
+
+    let entry_option = element.entry().to_app_option()?;
+
+    let nifty =
+        entry_option.ok_or_else(|| WasmError::Guest("The targeted entry is empty :(".into()))?;
+
+    Ok(nifty)
+}
+
+fn latest_nifty_element(nifty_id: NiftyId) -> ExternResult<Element> {
     // TODO walk the chain to find the latest update
     // We currently return the first entry!
 
@@ -89,15 +116,23 @@ fn latest_nifty(nifty_id: NiftyId) -> ExternResult<Nifty> {
 
     let link = links[0].clone();
 
-    let element: Element = get(link.target, GetOptions::default())?
-        .ok_or_else(|| WasmError::Guest(String::from("Entry not found")))?;
+    // let details = get_details(link.target, GetOptions::default())?;
+    debug!("{:#?}", details);
+    // get_details(hash(element));
 
-    let entry_option = element.entry().to_app_option()?;
+    // let eh: EntryHash = input.into();
+    // let updates =
+    let maybe_latest = match get_details(link.target, GetOptions::default())? {
+        Some(Details::Entry(EntryDetails { updates, .. })) => Some(updates[0]),
+        _ => None,
+    };
 
-    let nifty =
-        entry_option.ok_or_else(|| WasmError::Guest("The targeted entry is empty :(".into()))?;
+    // return pair 
+    // header hash
+    // entry
 
-    Ok(nifty)
+    // Ok(())
+    unimplemented!();
 }
 
 #[derive(Serialize, Deserialize, Debug, SerializedBytes)]

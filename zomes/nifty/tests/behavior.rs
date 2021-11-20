@@ -74,6 +74,16 @@ pub async fn test_transfer() {
         .call(&cell_alice.zome("nifty"), "create", nifty_input.clone())
         .await;
 
+    // let current_owner: AgentPubKey = conductor_alice
+    //     .call(
+    //         &cell_alice.zome("nifty"),
+    //         "current_owner",
+    //         nifty_input.clone(),
+    //     )
+    //     .await;
+
+    // assert_eq!(current_owner, cell_alice.agent_pubkey().clone());
+
     let _: () = conductor_alice
         .call(&cell_alice.zome("nifty"), "transfer", transfer_input)
         .await;
