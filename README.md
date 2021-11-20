@@ -1,15 +1,34 @@
 # HDK Explorations
 
-## Holochain in Action #24
+## Running Tests
 
-### Goals
+```
+bin/run.sh test
+```
 
-- Walking trees of entry updates by multiple parties
-- Filtering update tree branches to only valid ones
+Or to re-run tests on changes:
 
-## Holochain in Action #23
+```
+bin/run.sh test_watch
+```
 
-### Goals
+## Holochain in Action
+
+This code was developed partially during [_Holochain in Action_](https://www.youtube.com/channel/UCJwIuwkCI5HMSzHJpKys-RQ) sessions.
+
+### Branches
+
+Initial repo state is in branch `holochain-in-action-[session_number]-start`.
+
+Repo state at the end of this session is in branch `holochain-in-action-[session_number]-end`.
+
+Notes, readme, etc are in branch `holochain-in-action-[session_number]`.
+
+### Holochain in Action #23
+
+Video: https://www.youtube.com/watch?v=kOZMfpwANx8
+
+#### Goals
 
 We accomplished these goals:
 
@@ -23,22 +42,16 @@ And began to lay the groundwork for these:
 And left this one for a future session:
 - Countersigning flow
 
-### Branches
+### Holochain in Action #24
 
-Initial repo state is in branch `holochain-in-action-23-start`.
+Video: https://www.youtube.com/watch?v=kT0Clhzixw4
 
-Repo state at the end of this session is in branch `holochain-in-action-23-end`.
+#### Goals
 
-Notes, readme, etc are in branch `holochain-in-action-23`.
+We began to lay the groundwork for these goals:
 
-## Running Tests
+- Walking trees of entry updates by multiple parties
 
-```
-bin/run.sh test
-```
+And left this one for a future session:
 
-Or to re-run tests on changes:
-
-```
-bin/run.sh test_watch
-```
+- Filtering update tree branches to only valid ones
