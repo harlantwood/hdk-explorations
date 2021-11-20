@@ -6,6 +6,8 @@ members = [
 
 [profile.dev]
 opt-level = "z"
+split-debuginfo = "unpacked"  # see https://endler.dev/2020/rust-compile-times/#faster-incremental-debug-builds-on-macos
 
 [profile.release]
 opt-level = "z"
+incremental = true  # see https://nnethercote.github.io/perf-book/compile-times.html#incremental-compilation
