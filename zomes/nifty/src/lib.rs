@@ -1,4 +1,6 @@
-#![allow(warnings)]
+// #![allow(warnings)]
+#![warn(warnings)]
+// #![warn(unused_variables)]  # does not work
 
 use std::convert::{TryFrom, TryInto};
 
