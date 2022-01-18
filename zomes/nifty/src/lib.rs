@@ -70,7 +70,7 @@ fn link_id_to_nifty(source: NiftyId, target: Nifty) -> ExternResult<()> {
 }
 
 #[hdk_extern]
-pub fn transfer(transfer_input: TransferInput) -> ExternResult<()> {
+pub fn transfer(_transfer_input: TransferInput) -> ExternResult<()> {
     // let nifty_id = transfer_input.nifty_id.clone();
     // let latest_nifty_element = latest_nifty_element(NiftyId {
     //     id: nifty_id.clone(),
@@ -97,7 +97,7 @@ pub fn current_owner(nifty_id: NiftyId) -> ExternResult<AgentPubKey> {
     Ok(owner)
 }
 
-fn latest_nifty(nifty_id: NiftyId) -> ExternResult<Nifty> {
+fn latest_nifty(_nifty_id: NiftyId) -> ExternResult<Nifty> {
     // let element = latest_nifty_element(nifty_id)?;
 
     // let entry_option = element.entry().to_app_option()?;
@@ -107,11 +107,10 @@ fn latest_nifty(nifty_id: NiftyId) -> ExternResult<Nifty> {
 
     // Ok(nifty)
 
-   Ok( Nifty {
-       id: "foobar".into(),
-       owner:  agent_info()?.agent_latest_pubkey,
-   })
-
+    Ok(Nifty {
+        id: "foobar".into(),
+        owner: agent_info()?.agent_latest_pubkey,
+    })
 }
 
 // fn latest_nifty_element(nifty_id: NiftyId) -> ExternResult<Element> {
@@ -227,4 +226,38 @@ pub fn debug(_: ()) -> ExternResult<()> {
     trace!("tracing {}", "works!"); // this is a logging level
 
     Ok(())
+}
+
+#[hdk_extern]
+pub fn create_link_with_tag(link_tag_bytes: Vec<u8>) -> ExternResult<()> {
+    let base = NiftyId { id: "base".into() };
+    let target = NiftyId {
+        id: "target".into(),
+    };
+
+    create_entry(base.clone())?;
+    create_entry(target.clone())?;
+
+    let _link = create_link(
+        hash_entry(base)?,
+        hash_entry(target)?,
+        LinkTag(link_tag_bytes),
+    )?;
+
+    Ok(())
+}
+
+#[hdk_extern]
+pub fn get_links_by_tag(link_tag_bytes: Vec<u8>) -> ExternResult<LinkTag> {
+    let base = NiftyId { id: "base".into() };
+
+    let links = get_links(hash_entry(base)?, Some(LinkTag(link_tag_bytes)))?;
+
+    let link = links[0].clone(); // TODO: handle multiple links
+
+    let tag = link.tag.clone();
+
+    debug!("tag length in bytes: {:#?}", tag.clone().into_inner().len());
+
+    Ok(tag)
 }

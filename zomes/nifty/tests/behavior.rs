@@ -114,7 +114,7 @@ pub async fn test_transfer() {
         .call(&cell_alice.zome("nifty"), "transfer", transfer_input)
         .await;
 
-    let current_owner: AgentPubKey = conductor_alice
+    let _current_owner: AgentPubKey = conductor_alice
         .call(&cell_alice.zome("nifty"), "current_owner", nifty_input)
         .await;
 
@@ -134,6 +134,39 @@ pub async fn test_wasm_debugging() {
     let cell_alice = cells[0];
 
     let _: () = conductor.call(&cell_alice.zome("nifty"), "debug", ()).await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+pub async fn test_link_tag_length_allowed() {
+    let (conductors, _agents, apps) = setup_conductors(1).await;
+
+    let conductor = &conductors[0];
+
+    let cells = apps.cells_flattened();
+    let cell_alice = cells[0];
+
+    let link_tag_bytes: Vec<u8> = vec![0; 999];
+
+    let _: () = conductor
+        .call(
+            &cell_alice.zome("nifty"),
+            "create_link_with_tag",
+            link_tag_bytes.clone(),
+        )
+        .await;
+
+    let tag: LinkTag = conductor
+        .call(
+            &cell_alice.zome("nifty"),
+            "get_links_by_tag",
+            link_tag_bytes.clone(),
+        )
+        .await;
+
+    let link_tag_bytes_returned: Vec<u8> = tag.into_inner();
+
+    assert_eq!(link_tag_bytes.len(), link_tag_bytes_returned.len());
+    assert_eq!(link_tag_bytes, link_tag_bytes_returned);
 }
 
 // UTILS:
