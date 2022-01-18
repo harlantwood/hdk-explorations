@@ -55,7 +55,7 @@ test_watch () {
 
 test_metal () {
   # shell "cargo test"
-  shell "cargo test -- --nocapture"
+  shell "time cargo test -- --nocapture"
 }
 
 cargo_check () {
