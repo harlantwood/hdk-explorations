@@ -263,6 +263,13 @@ pub fn get_links_by_tag(link_tag_bytes: Vec<u8>) -> ExternResult<LinkTag> {
 }
 
 #[hdk_extern]
+pub fn fetch_links((base, link_tag_bytes): (EntryHashB64, Vec<u8>)) -> ExternResult<Vec<Link>> {
+    let links = get_links(base.into(), Some(LinkTag(link_tag_bytes)))?;
+
+    Ok(links)
+}
+
+#[hdk_extern]
 pub fn update_entry_to_different_type(_: ()) -> ExternResult<()> {
     let base = NiftyId { id: "base".into() };
     let new = Nifty {

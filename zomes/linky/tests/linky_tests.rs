@@ -52,17 +52,32 @@ pub async fn test_link_to_entries_from_another_zome() {
         .await;
 
     // FETCH LINKS: NIFTY1 -[XYZ]-> *
+    // from linky zome - link will be found
     let links: Vec<Link> = conductor
         .call(
             &cell_alice.zome("linky"),
             "fetch_links",
-            (nifty1_entry_hash, link_tag_bytes.clone()),
+            (nifty1_entry_hash.clone(), link_tag_bytes.clone()),
         )
         .await;
 
-    let link_target: EntryHashB64 = links[0].target.clone().into();
+    let mut link_target: EntryHashB64 = links[0].target.clone().into();
     assert_eq!(link_target, nifty2_entry_hash);
-    println!("link target: {:#?}", links[0].target);
+
+    // FETCH LINKS: NIFTY1 -[XYZ]-> *
+    // from nifty zome - link will also be found
+    let links: Vec<Link> = conductor
+        .call(
+            &cell_alice.zome("linky"),
+            "fetch_links",
+            (nifty1_entry_hash.clone(), link_tag_bytes.clone()),
+        )
+        .await;
+
+    assert_eq!(links.len(), 1);
+    link_target = links[0].target.clone().into();
+    println!("link_target: {:#?}", link_target);
+    assert_eq!(link_target, nifty2_entry_hash);
 }
 
 // UTILS:
