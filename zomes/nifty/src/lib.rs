@@ -5,9 +5,7 @@
 use std::convert::{TryFrom, TryInto};
 
 use hdk::entry::EntryDefRegistration;
-use hdk::prelude::HasHash;
 use hdk::prelude::*;
-use hdk::prelude::{entry_defs, hdk_extern, map_extern, ExternResult};
 
 entry_defs![
     Nifty::entry_def(),
@@ -42,7 +40,7 @@ pub struct TransferInput {
 }
 
 #[hdk_extern]
-pub fn create(nifty_id: NiftyId) -> ExternResult<()> {
+pub fn create(nifty_id: NiftyId) -> ExternResult<EntryHash> {
     let _nifty_id_entry = create_entry(nifty_id.clone())?;
 
     let owner = agent_info()?.agent_latest_pubkey;
@@ -56,7 +54,8 @@ pub fn create(nifty_id: NiftyId) -> ExternResult<()> {
 
     link_id_to_nifty(nifty_id.clone(), nifty.clone())?;
 
-    Ok(())
+    let nifty_entry_hash = hash_entry(nifty)?;
+    Ok(nifty_entry_hash)
 }
 
 fn link_id_to_nifty(source: NiftyId, target: Nifty) -> ExternResult<()> {

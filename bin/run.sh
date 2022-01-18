@@ -26,7 +26,7 @@ run () {
 
 shell () {
   command=$1
-  echo "----> ${command}"
+  echo "--->>> ${command}"
   eval "$command"
 }
 
@@ -50,7 +50,7 @@ test () {
 }
 
 test_watch () {
-  shell "cargo watch --clear -- bin/run.sh test"
+  shell "cargo watch -- bin/run.sh test"
 }
 
 test_metal () {

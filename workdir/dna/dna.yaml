@@ -1,8 +1,10 @@
 ---
 manifest_version: "1"
-name: nifty
+name: all
 uuid: ~
 properties: ~
 zomes:
   - name: nifty
     bundled: ../../target/wasm32-unknown-unknown/release/nifty.wasm
+  - name: linky
+    bundled: ../../target/wasm32-unknown-unknown/release/linky.wasm

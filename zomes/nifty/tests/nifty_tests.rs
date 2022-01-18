@@ -7,7 +7,7 @@ use holochain::test_utils::consistency_10s;
 
 use nifty::*;
 
-const DNA_FILEPATH: &str = "../../workdir/dna/nifty.dna";
+const DNA_FILEPATH: &str = "../../workdir/dna/all.dna";
 
 #[tokio::test(flavor = "multi_thread")]
 #[ignore]
@@ -25,13 +25,13 @@ pub async fn test_get_details_for_entry() {
         id: "abc123".into(),
     };
 
-    let _: () = conductor_alice
+    let _: EntryHash = conductor_alice
         .call(&cell_alice.zome("nifty"), "create", nifty_input.clone())
         .await;
-    let _: () = conductor_alice
+    let _: EntryHash = conductor_alice
         .call(&cell_alice.zome("nifty"), "create", nifty_input.clone())
         .await;
-    let _: () = conductor_bob
+    let _: EntryHash = conductor_bob
         .call(&cell_bob.zome("nifty"), "create", nifty_input.clone())
         .await;
 
@@ -96,7 +96,7 @@ pub async fn test_transfer() {
         recipient: cell_bob.agent_pubkey().clone(),
     };
 
-    let _: () = conductor_alice
+    let _: EntryHash = conductor_alice
         .call(&cell_alice.zome("nifty"), "create", nifty_input.clone())
         .await;
 

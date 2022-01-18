@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "zomes/nifty",
+  "zomes/linky",
 ]
 # resolver = "2"
 
