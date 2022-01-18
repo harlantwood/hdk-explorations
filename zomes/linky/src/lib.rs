@@ -2,9 +2,9 @@
 #![warn(warnings)]
 // #![warn(unused_variables)]  # does not work
 
-use std::convert::{TryFrom, TryInto};
+// use std::convert::{TryFrom, TryInto};
 
-use hdk::entry::EntryDefRegistration;
+// use hdk::entry::EntryDefRegistration;
 use hdk::prelude::*;
 
 #[hdk_extern]

@@ -139,9 +139,7 @@ pub async fn test_wasm_debugging() {
 #[tokio::test(flavor = "multi_thread")]
 pub async fn test_link_tag_length_allowed() {
     let (conductors, _agents, apps) = setup_conductors(1).await;
-
     let conductor = &conductors[0];
-
     let cells = apps.cells_flattened();
     let cell_alice = cells[0];
 
@@ -167,6 +165,25 @@ pub async fn test_link_tag_length_allowed() {
 
     assert_eq!(link_tag_bytes.len(), link_tag_bytes_returned.len());
     assert_eq!(link_tag_bytes, link_tag_bytes_returned);
+}
+
+#[ignore]
+#[tokio::test(flavor = "multi_thread")]
+pub async fn test_updating_entry_to_different_type() {
+    let (conductors, _agents, apps) = setup_conductors(1).await;
+    let conductor = &conductors[0];
+    let cells = apps.cells_flattened();
+    let cell_alice = cells[0];
+
+    // throws a runtime error:
+    // InvalidCommit ... Update original EntryType ... doesn't match new EntryType
+    let _: () = conductor
+        .call(
+            &cell_alice.zome("nifty"),
+            "update_entry_to_different_type",
+            (),
+        )
+        .await;
 }
 
 // UTILS:

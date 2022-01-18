@@ -5,7 +5,7 @@ use hdk::prelude::*;
 use holochain::sweettest::*;
 // use holochain::test_utils::consistency_10s;
 
-use linky::*;
+// use linky::*;
 use nifty::NiftyId;
 
 const DNA_FILEPATH: &str = "../../workdir/dna/all.dna";

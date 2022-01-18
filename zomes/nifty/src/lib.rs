@@ -260,3 +260,16 @@ pub fn get_links_by_tag(link_tag_bytes: Vec<u8>) -> ExternResult<LinkTag> {
 
     Ok(tag)
 }
+
+#[hdk_extern]
+pub fn update_entry_to_different_type(_: ()) -> ExternResult<()> {
+    let base = NiftyId { id: "base".into() };
+    let new = Nifty {
+        id: "base".into(),
+        owner: agent_info()?.agent_latest_pubkey,
+    };
+
+    let header_hash_create = create_entry(base.clone())?;
+    update_entry(header_hash_create.clone(), new.clone())?;
+    Ok(())
+}
