@@ -1,6 +1,7 @@
 #![warn(warnings)]
 
 use futures::future;
+use hdk::prelude::holo_hash::EntryHashB64;
 use hdk::prelude::*;
 use holochain::sweettest::*;
 use holochain::test_utils::consistency_10s;
@@ -25,13 +26,13 @@ pub async fn test_get_details_for_entry() {
         id: "abc123".into(),
     };
 
-    let _: EntryHash = conductor_alice
+    let _: EntryHashB64 = conductor_alice
         .call(&cell_alice.zome("nifty"), "create", nifty_input.clone())
         .await;
-    let _: EntryHash = conductor_alice
+    let _: EntryHashB64 = conductor_alice
         .call(&cell_alice.zome("nifty"), "create", nifty_input.clone())
         .await;
-    let _: EntryHash = conductor_bob
+    let _: EntryHashB64 = conductor_bob
         .call(&cell_bob.zome("nifty"), "create", nifty_input.clone())
         .await;
 
@@ -96,7 +97,7 @@ pub async fn test_transfer() {
         recipient: cell_bob.agent_pubkey().clone(),
     };
 
-    let _: EntryHash = conductor_alice
+    let _: EntryHashB64 = conductor_alice
         .call(&cell_alice.zome("nifty"), "create", nifty_input.clone())
         .await;
 

@@ -1,6 +1,7 @@
 #![warn(warnings)]
 
 use futures::future;
+use hdk::prelude::holo_hash::EntryHashB64;
 use hdk::prelude::*;
 use holochain::sweettest::*;
 // use holochain::test_utils::consistency_10s;
@@ -21,17 +22,17 @@ pub async fn test_link_to_entries_from_another_zome() {
 
     // NIFTY1 ENTRY
     let nifty1_input = NiftyId {
-        id: "nifty1".into(),
+        id: "nifty1a".into(),
     };
-    let nifty1_entry_hash: EntryHash = conductor
+    let nifty1_entry_hash: EntryHashB64 = conductor
         .call(&cell_alice.zome("nifty"), "create", nifty1_input.clone())
         .await;
 
     // NIFTY2 ENTRY
     let nifty2_input = NiftyId {
-        id: "nifty2".into(),
+        id: "nifty2b".into(),
     };
-    let nifty2_entry_hash: EntryHash = conductor
+    let nifty2_entry_hash: EntryHashB64 = conductor
         .call(&cell_alice.zome("nifty"), "create", nifty2_input.clone())
         .await;
 
@@ -59,7 +60,8 @@ pub async fn test_link_to_entries_from_another_zome() {
         )
         .await;
 
-    assert_eq!(links[0].target, nifty2_entry_hash);
+    let link_target: EntryHashB64 = links[0].target.clone().into();
+    assert_eq!(link_target, nifty2_entry_hash);
     println!("link target: {:#?}", links[0].target);
 }
 
